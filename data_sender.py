@@ -5,7 +5,7 @@ from threading import *
 from configreader import *
 
 
-class UDPSender:
+class DataSender:
     cs = socket(AF_INET, SOCK_DGRAM)
     mac = get_mac()
     config = ConfigReader()
