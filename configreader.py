@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Egomatic conf file read module
 import os.path
 
