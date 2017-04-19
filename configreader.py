@@ -3,7 +3,7 @@
 import os.path
 
 
-class ConfigReader:
+class ConfigReader:  # Singleton
     class __ConfigReader:
         __GPIO_PINS = []
         __PULSES_PER_LITER = 0
