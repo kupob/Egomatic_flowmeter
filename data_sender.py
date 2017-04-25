@@ -20,18 +20,18 @@ class DataSender(Thread):
 
         while True:
             if self.message_deque:
-                message = str(self.mac) + ' ' + str(self.message_deque.popleft()).strip('[]')
+                message = str(self.mac) + ' ' + str(self.message_deque.popleft()).strip('[,]')
                 try:
                     self.cs.sendto(message, self.server_address)
                 except socket.error, exc:
                     print exc
 
     def send_notify_signal(self):
-        self.message_deque.append([self.config.message_type('MSG_NOTIFY')])
+        self.message_deque.append([self.config.get_message_type('MSG_NOTIFY')])
 
     def send_flow(self, pin, flow):
-        self.message_deque.append([self.config.message_type('MSG_FLOW'), pin, flow])
+        self.message_deque.append([self.config.get_message_type('MSG_FLOW'), pin, flow])
 
     def send_stop_signal(self, pin):
-        self.message_deque.append([self.config.message_type('MSG_STOP_SIGNAL'), pin])
+        self.message_deque.append([self.config.get_message_type('MSG_STOP_SIGNAL'), pin])
 

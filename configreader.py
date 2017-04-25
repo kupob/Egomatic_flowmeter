@@ -41,7 +41,7 @@ class ConfigReader:  # Singleton
                         self.__SERVER_HOST = value
                     elif code == "SERVER_PORT":
                         self.__SERVER_PORT = int(value)
-                    elif code[0:5] == "MSG_":
+                    elif code[0:4] == "MSG_":
                         self.__MSG_TYPES[code] = int(value)
 
         def get_GPIO_pins(self):
@@ -56,8 +56,8 @@ class ConfigReader:  # Singleton
         def get_server_port(self):
             return self.__SERVER_PORT
 
-        def message_types(self, message_type):
-            return self.__MSG_TYPES[message_type]
+        def get_message_type(self, message_type):
+            return self.__MSG_TYPES.get(message_type, -1)
 
     instance = None
 
