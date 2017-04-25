@@ -3,7 +3,6 @@ import socket
 from uuid import getnode as get_mac
 from threading import *
 from configreader import *
-from constants import *
 from collections import deque
 
 
@@ -28,11 +27,11 @@ class DataSender(Thread):
                     print exc
 
     def send_notify_signal(self):
-        self.message_deque.append([MSG_NOTIFY])
+        self.message_deque.append([self.config.message_type('MSG_NOTIFY')])
 
     def send_flow(self, pin, flow):
-        self.message_deque.append([MSG_FLOW, pin, flow])
+        self.message_deque.append([self.config.message_type('MSG_FLOW'), pin, flow])
 
     def send_stop_signal(self, pin):
-        self.message_deque.append([MSG_STOP_SIGNAL, pin])
+        self.message_deque.append([self.config.message_type('MSG_STOP_SIGNAL'), pin])
 

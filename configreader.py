@@ -9,9 +9,10 @@ class ConfigReader:  # Singleton
         __PULSES_PER_LITER = 0
         __SERVER_HOST = ""
         __SERVER_PORT = 0
+        __MSG_TYPES = {}
 
         def __init__(self):
-            file_name = './settings.conf'
+            file_name = '../settings.conf'
 
             if os.path.isfile(file_name):
                 file = open(file_name, 'r')
@@ -20,17 +21,28 @@ class ConfigReader:  # Singleton
                         continue
 
                     line_split = line.split()
+
                     if not line_split:
                         continue
-                    if line_split[0] == 'PULSES_PER_LITER':
-                        self.__PULSES_PER_LITER = float(line_split[1])
-                    elif line_split[0] == "GPIO_PINS":
+
+                    code = line_split[0]
+                    value = line_split[1]
+
+                    if code == 'PULSES_PER_LITER':
+                        self.__PULSES_PER_LITER = float(value)
+                    elif code == "GPIO_PINS":
                         for i in line_split[1:]:
                             self.__GPIO_PINS.append(int(i))
-                    elif line_split[0] == "SERVER_HOST":
-                        self.__SERVER_HOST = line_split[1]
-                    elif line_split[0] == "SERVER_PORT":
-                        self.__SERVER_PORT = int(line_split[1])
+                    elif code == "SERVER_HOST":
+                        self.__SERVER_HOST = value
+                    elif code == "SERVER_PORT":
+                        self.__SERVER_PORT = int(value)
+                    elif code == "SERVER_HOST":
+                        self.__SERVER_HOST = value
+                    elif code == "SERVER_PORT":
+                        self.__SERVER_PORT = int(value)
+                    elif code[0:5] == "MSG_":
+                        self.__MSG_TYPES[code] = int(value)
 
         def get_GPIO_pins(self):
             return self.__GPIO_PINS
@@ -43,6 +55,9 @@ class ConfigReader:  # Singleton
 
         def get_server_port(self):
             return self.__SERVER_PORT
+
+        def message_types(self, message_type):
+            return self.__MSG_TYPES[message_type]
 
     instance = None
 
