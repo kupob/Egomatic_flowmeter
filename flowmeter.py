@@ -17,6 +17,8 @@ class FlowMeter:
     thisPour = 0.0  # in Liters
     totalPour = 0.0  # in Liters
 
+    price = 0.0
+
     def __init__(self, pulses_per_liter):
         self.clicks = 0
         self.lastClick = int(time.time() * FlowMeter.MS_IN_A_SECOND)
@@ -27,9 +29,13 @@ class FlowMeter:
         self.totalPour = 0.0
         self.enabled = True
         self.pulses_per_liter = pulses_per_liter
+        self.price = 0.0
 
     def set_display_format(self, display_format):
         self.display_format = display_format
+
+    def set_price(self, price):
+        self.price = price
 
     def tick(self):
         if not self.enabled:
