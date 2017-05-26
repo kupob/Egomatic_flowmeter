@@ -25,8 +25,8 @@ class NetworkSender(Thread):
 
         while True:
             self.event.wait()
-            if self.message_deque:
-                message = str(self.message_deque.popleft()).strip('[,]')
+            while self.message_deque:
+                message = ' '.join(str(x) for x in self.message_deque.popleft())
                 try:
                     self.cs.sendto(message, self.server_address)
                 except socket.error, exc:
@@ -39,9 +39,10 @@ class NetworkSender(Thread):
     def send_notify_signal(self):
         self.message_deque.append([self.config.get_message_type('MSG_NOTIFY')])
 
-    def send_flow(self, pin, flow):
-        self.message_deque.append([self.config.get_message_type('MSG_FLOW'), pin, flow])
+    def send_flow(self, pin, flow, new_balance, customer_id):
+        self.message_deque.append([self.config.get_message_type('MSG_FLOW'), pin, flow, new_balance, customer_id])
 
     def send_stop_signal(self, pin):
+        # TODO send to valve, not to server
         self.message_deque.append([self.config.get_message_type('MSG_STOP_SIGNAL'), pin])
 
