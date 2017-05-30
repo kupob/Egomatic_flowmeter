@@ -39,8 +39,9 @@ class NetworkSender(Thread):
     def send_notify_signal(self):
         self.message_deque.append([self.config.get_message_type('MSG_NOTIFY')])
 
-    def send_flow(self, pin, flow, new_balance, customer_id):
-        self.message_deque.append([self.config.get_message_type('MSG_FLOW'), pin, flow, new_balance, customer_id])
+    def send_flow(self, pin, flow, old_balance, new_balance, customer_id):
+        self.message_deque.append([self.config.get_message_type('MSG_FLOW'),
+                                   pin, flow, old_balance, new_balance, customer_id])
 
     def send_stop_signal(self, pin):
         # TODO send to valve, not to server

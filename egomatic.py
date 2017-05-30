@@ -40,6 +40,7 @@ flowmeters = {}
 flowmeters_stopvalues = {}
 prices_loaded = False
 customer_balance = 0.0
+new_customer_balance = 0.0
 customer_id = None
 
 
@@ -87,30 +88,35 @@ while True:
         flowmeter = flowmeters[pin]
         flowmeter_stopvalue = flowmeters_stopvalues[pin]
 
+        if flowmeter.is_under_maintenance:
+            continue
+
         # Check for stop signal
         # TODO рассчитать точное значение слева знака
         if flowmeter.thisPour > 0.0 or flowmeter.totalPour > 0.0:
             totalPour = flowmeter.totalPour
-            customer_balance -= flowmeter.thisPour * flowmeter.price
+            new_customer_balance -= flowmeter.thisPour * flowmeter.price
             last_acton_time = max(last_acton_time, flowmeter.lastClick)
-            if 5.0 > customer_balance:
+            if 5.0 > new_customer_balance:
                 sender.send_stop_signal(pin)
                 sender_event.set()
                 print "SEND BALANCE"
-                sender.send_flow(pin, flowmeter.totalPour, customer_balance, customer_id)
+                sender.send_flow(pin, flowmeter.totalPour, customer_balance, new_customer_balance, customer_id)
                 sender_event.set()
+                customer_balance = new_customer_balance
 
             # Send flow
             if current_time - flowmeter.lastClick > 5000:
                 print "SEND BALANCE"
-                sender.send_flow(pin, flowmeter.totalPour, customer_balance, customer_id)
+                sender.send_flow(pin, flowmeter.totalPour, customer_balance, new_customer_balance, customer_id)
                 sender_event.set()
+                customer_balance = new_customer_balance
                 flowmeter.totalPour = 0.0
 
             flowmeter.thisPour = 0.0
 
     flow_string = u'В бокале: {:.3f}л'.format(totalPour)
-    balance_string = u'На счете:{}{:.1f}р'.format((u'', u' ')[customer_balance < 1000.0], customer_balance)
+    balance_string = u'На счете:{}{:.1f}р'.format((u'', u' ')[new_customer_balance < 1000.0], new_customer_balance)
 
     if not customer_id or current_time - last_acton_time > 12000:
         new_lcd_string = u'Вставьте карту'
@@ -131,13 +137,16 @@ while True:
 
         if message_type == config.get_message_type('MSG_PRICES'):
             message_parsed = ast.literal_eval(message[2:])
+            print "PRICES COME " + str(message_parsed)
             prices_loaded = True
-            for price_pairs in message_parsed:
-                if price_pairs[0] in flowmeters:
-                    flowmeters[price_pairs[0]].set_price(price_pairs[1])
+            for single_row in message_parsed:
+                if single_row[0] in flowmeters:
+                    flowmeters[single_row[0]].set_price(single_row[1])
+                    flowmeters[single_row[0]].set_maintenance(single_row[2])
         elif message_type == config.get_message_type('MSG_BALANCE'):
             print "BALANCE COME " + ' '.join(message_split)
             customer_balance = float(message_split[1])
+            new_customer_balance = customer_balance
             customer_id = message_split[2]
             last_acton_time = current_time
         else:

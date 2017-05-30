@@ -16,18 +16,12 @@ class FlowMeter:
     flow = 0  # in Liters per second
     thisPour = 0.0  # in Liters
     totalPour = 0.0  # in Liters
+    is_under_maintenance = False
 
     price = 0.0
 
     def __init__(self, pulses_per_liter):
-        self.clicks = 0
         self.lastClick = int(time.time() * FlowMeter.MS_IN_A_SECOND)
-        self.clickDelta = 0
-        self.hertz = 0.0
-        self.flow = 0.0
-        self.thisPour = 0.0
-        self.totalPour = 0.0
-        self.enabled = True
         self.pulses_per_liter = pulses_per_liter
         self.price = 0.0
 
@@ -36,6 +30,10 @@ class FlowMeter:
 
     def set_price(self, price):
         self.price = price
+
+    def set_maintenance(self, is_under_maintenance):
+        self.is_under_maintenance = is_under_maintenance == 'True'
+        print self.is_under_maintenance
 
     def tick(self):
         if not self.enabled:
